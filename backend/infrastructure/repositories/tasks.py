@@ -1,6 +1,6 @@
 from sqlmodel import Session, delete, select
 
-from domain.tasks import Task
+from domain.aggregates.tasks import Task
 
 
 class TaskRepository:

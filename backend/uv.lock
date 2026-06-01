@@ -811,6 +811,15 @@ wheels = [
 ]
 
 [[package]]
+name = "snowflake-id-toolkit"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/71/6c/3a873c9ea3b72995abb2fd0e145aa30a17e53249af1a3aa53302842b2a5b/snowflake_id_toolkit-0.6.0.tar.gz", hash = "sha256:3c2de916bd09e19a26ccecb3b5a5fc4560fbf9376d5448adcec993f6fe17a271", size = 20684, upload-time = "2025-12-14T15:27:02.183Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/5f/8f1d94ea365c9c4a16f0ba7aa43461f6db3a49e48bef0c343c87840205b1/snowflake_id_toolkit-0.6.0-py3-none-any.whl", hash = "sha256:38ed8e5850a71339f16335adbaac3feb8d5c5466791a739f9e6a726d4df122c6", size = 17566, upload-time = "2025-12-14T15:27:03.514Z" },
+]
+
+[[package]]
 name = "snowflakekit"
 version = "0.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -897,6 +906,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "snowflake-id-toolkit" },
     { name = "sqlmodel" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -915,6 +925,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.135.1" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-settings", specifier = ">=2.13.1" },
+    { name = "snowflake-id-toolkit", specifier = ">=0.6.0" },
     { name = "sqlmodel", specifier = ">=0.0.38" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.41.0" },
 ]

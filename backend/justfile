@@ -36,8 +36,8 @@ sync:
     uv sync
 
 test type="unit":
-    # uv run pytest ./tests/{{ type }}_tests -vvsrP
-    uv run pytest ./tests -vvsrP
+    uv run pytest ./tests/{{ type }} -vvsrP
+    # uv run pytest ./tests -vvsrP
 
 build:
     uv build

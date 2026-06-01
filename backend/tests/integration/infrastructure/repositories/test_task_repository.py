@@ -3,7 +3,7 @@ import random
 import pytest
 from sqlmodel import Session, delete, insert, select
 
-from domain.tasks import Task
+from domain.aggregates.tasks import Task
 from infrastructure.repositories.tasks import TaskRepository
 
 
