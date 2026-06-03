@@ -5,13 +5,13 @@ from pydantic_config.main import SettingsModel
 
 class DatabaseSettings(SettingsModel):
     DB_HOST: str = "localhost"
-    DB_USERNAME: str
-    DB_PASSWORD: str
-    DB_PORT: int
-    DB_NAME: str
-    DB_PROTOCOL: str
+    DB_USERNAME: str = "Nill"
+    DB_PASSWORD: str = "Nill"
+    DB_PORT: int = 123
+    DB_NAME: str = "Nill"
+    DB_PROTOCOL: str = "Nill"
 
-    DB_URL: str
+    DB_URL: str = "Nill"
 
     # @field_validator("DB_URL", mode="before")
     # def db_url(cls, v, values: ValidationInfo):
@@ -30,32 +30,5 @@ class Database(ABC):
         # Implement session management logic here
         pass
 
-    # def __init__(self, connection_string: str):
-    #     self.connection_string = connection_string
-    #     self.connection = None
-
-    # @abstractmethod
-    # def connect(self):
-    #     # Implement connection logic here
-    #     pass
-
-    # @abstractmethod
-    # def disconnect(self):
-    #     # Implement disconnection logic here
-    #     pass
-
-    # @abstractmethod
-    # def execute_query(self, query):
-    #     # Implement query execution logic here
-    #     pass
-
 
 # make generic
-class YieldDatabase:
-    def __init__(self, db_type: type[Database]):
-        self._db_type = db_type
-
-    def __call__(self, *args, **kwargs):
-        db_instance = self._db_type(*args, **kwargs)
-        with db_instance as db:
-            yield db

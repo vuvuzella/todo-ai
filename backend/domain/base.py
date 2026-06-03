@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel, ConfigDict
 from pydantic_config.main import SettingsModel
 from snowflake_id_toolkit import TwitterSnowflakeIDGenerator
@@ -9,7 +11,10 @@ class DomainSettings(SettingsModel):
 
 domain_settings = DomainSettings()
 
-snowflake_generator = TwitterSnowflakeIDGenerator(node_id=domain_settings.NODE_ID)
+snowflake_generator = TwitterSnowflakeIDGenerator(
+    node_id=domain_settings.NODE_ID,
+    epoch=int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+)
 
 
 class DomainBaseConfigDict(ConfigDict): ...

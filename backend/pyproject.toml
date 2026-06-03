@@ -37,6 +37,7 @@ pythonPlatform = "Linux"
 
 [dependency-groups]
 dev = [
+    "ptpython>=3.0.32",
     # "git-cliff>=2.11.0",
     # "jupyter>=1.1.1",
     "pytest>=9.0.1",

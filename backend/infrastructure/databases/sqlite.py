@@ -3,8 +3,7 @@ from contextlib import contextmanager
 from pydantic import ValidationInfo, field_validator
 from sqlmodel import Session, create_engine
 
-from infrastructure.config import DatabaseSettings
-from infrastructure.databases.base import Database
+from infrastructure.databases.base import Database, DatabaseSettings
 
 
 class SqliteConfig(DatabaseSettings):
@@ -32,15 +31,8 @@ class Sqlite(Database):
     def session(self):
         with Session(self._engine) as session:
             yield session
+            session.flush()
+            session.commit()
 
-    # def connect(self):
-    #     # Code to establish a connection to the SQLite database
-    #     ...
 
-    # def disconnect(self):
-    #     # Code to close the connection to the SQLite database
-    #     pass
-
-    # def execute_query(self, query):
-    #     # Code to execute a SQL query on the SQLite database
-    #     pass
+sqlite_db = Sqlite()  # ty:ignore[missing-argument]

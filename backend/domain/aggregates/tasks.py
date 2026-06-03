@@ -1,5 +1,7 @@
 from typing import Self
 
+from pydantic import field_serializer
+from sqlalchemy import BigInteger, Column
 from sqlmodel import Field, SQLModel
 
 from domain.base import snowflake_generator
@@ -15,6 +17,13 @@ class CreateTaskDTO(SQLModel):
 ## --- Read DTO --- ##
 class ReadTaskDTO(SQLModel):
     id: int
+
+    # We serialize the id into a string for the frontend
+    # frontend can send this to backend as int/string
+    @field_serializer("id")
+    def serialize_id(self, v: int) -> str:
+        return str(v)
+
     version: int
 
     name: str
@@ -48,8 +57,10 @@ class Task(SQLModel, table=True):
     __tablename__ = "tasks"
 
     id: int = Field(
-        default_factory=snowflake_generator.generate_next_id, primary_key=True
+        default_factory=snowflake_generator.generate_next_id,
+        primary_key=True,
     )
+
     version: int = Field(default=0)
 
     name: str

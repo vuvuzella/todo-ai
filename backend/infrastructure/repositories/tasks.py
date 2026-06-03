@@ -1,22 +1,19 @@
-from sqlmodel import Session, delete, select
+from sqlalchemy import Delete
+from sqlmodel import select
 
 from domain.aggregates.tasks import Task
+from infrastructure.repositories.base import Repository
 
 
-class TaskRepository:
-    def __init__(self, session: Session):
-        self.session = session
-
+class TaskRepository(Repository):
     def get_all_tasks(self) -> list[Task]:
         tasks = self.session.exec(select(Task)).all()
         return list(tasks)
 
-    def get_task_by_id(
-        self, task_id: int, raise_not_found: bool = False
-    ) -> Task | None:
+    def get_task_by_id(self, task_id: int, raise_not_found: bool = True) -> Task | None:
         # Code to retrieve a specific task by its ID from the database
         task = self.session.exec(select(Task).where(Task.id == task_id)).first()
-        if raise_not_found:
+        if task is None and raise_not_found:
             raise Exception(f"Task id {task_id} not found")
         return task
 
@@ -41,5 +38,5 @@ class TaskRepository:
 
     def delete_task(self, task_id: int):
         # Code to delete a task from the database
-        self.session.exec(delete(Task).where(Task.id == task_id))  # ty:ignore[invalid-argument-type]:wa
+        self.session.exec(Delete(Task).where(Task.id == task_id))  # ty:ignore[invalid-argument-type]:wa
         self.session.commit()
