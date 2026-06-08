@@ -1,7 +1,14 @@
 import uvicorn
 from fastapi import Depends, FastAPI, status
+from networkx import NodeNotFound
 
-from domain.aggregates.tasks import CreateTaskDTO, ReadTaskDTO, Task, UpdateTaskDTO
+from domain.aggregates.tasks import (
+    CompleteTaskDTO,
+    CreateTaskDTO,
+    ReadTaskDTO,
+    Task,
+    UpdateTaskDTO,
+)
 from infrastructure.repositories.base import YieldRepository
 from infrastructure.repositories.tasks import TaskRepository
 
@@ -51,6 +58,24 @@ def delete_task(
     task_repo: TaskRepository = Depends(YieldRepository(TaskRepository)),
 ):
     task_repo.delete_task(task_id)
+
+
+@app.patch(
+    "/tasks/{task_id}/complete",
+    response_model=ReadTaskDTO,
+    status_code=status.HTTP_200_OK,
+)
+def complete_task(
+    task_id: int,
+    payload: CompleteTaskDTO,
+    task_repo: TaskRepository = Depends(YieldRepository(TaskRepository)),
+):
+    task = task_repo.get_task_by_id(task_id)
+    if task is None:
+        raise Exception("Task Not found")
+    task = task.complete(dto=payload)
+    task_repo.update_task(task)
+    return task
 
 
 def start():
