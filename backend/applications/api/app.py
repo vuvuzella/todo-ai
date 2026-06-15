@@ -1,7 +1,4 @@
 import uvicorn
-from fastapi import Depends, FastAPI, status
-from networkx import NodeNotFound
-
 from domain.aggregates.tasks import (
     CompleteTaskDTO,
     CreateTaskDTO,
@@ -9,6 +6,7 @@ from domain.aggregates.tasks import (
     Task,
     UpdateTaskDTO,
 )
+from fastapi import Depends, FastAPI, status
 from infrastructure.repositories.base import YieldRepository
 from infrastructure.repositories.tasks import TaskRepository
 
