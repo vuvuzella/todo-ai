@@ -563,6 +563,8 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-config" },
     { name = "pydantic-settings" },
+    { name = "snowflake-id-toolkit" },
+    { name = "sqlmodel" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -588,6 +590,8 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-config", specifier = ">=0.4.0" },
     { name = "pydantic-settings", specifier = ">=2.13.1" },
+    { name = "snowflake-id-toolkit", specifier = ">=0.6.0" },
+    { name = "sqlmodel", specifier = ">=0.0.38" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.41.0" },
 ]
 

@@ -5,19 +5,20 @@ set positional-arguments
 set export
 # set quiet
 
-export profile := "vuvuzella"
-export domain := env('AWS_CODEARTIFACT_DOMAIN', "test_codeartifact_domain")
-export domain_owner := env('AWS_ACCOUNT_ID', "test_aws_account_id")
-export region := env('AWS_REGION', "test_aws_region")
-
-get_auth_codeartifact_cli := "aws codeartifact get-authorization-token --domain $1 --domain-owner $2 --region $3 --output text | awk -F' ' '{print $1}'"
-
-code_artifact_token := shell(get_auth_codeartifact_cli, domain, domain_owner, region)
-export AWS_CODEARTIFACT_TOKEN := code_artifact_token
-export UV_INDEX_CODEARTIFACT_USERNAME := "aws"
-export UV_INDEX_CODEARTIFACT_PASSWORD := code_artifact_token
-export UV_PUBLISH_USERNAME := "aws"
-export UV_PUBLISH_PASSWORD := code_artifact_token
+# aws python repo
+# export profile := "vuvuzella"
+# export domain := env('AWS_CODEARTIFACT_DOMAIN', "test_codeartifact_domain")
+# export domain_owner := env('AWS_ACCOUNT_ID', "test_aws_account_id")
+# export region := env('AWS_REGION', "test_aws_region")
+# 
+# get_auth_codeartifact_cli := "aws codeartifact get-authorization-token --domain $1 --domain-owner $2 --region $3 --output text | awk -F' ' '{print $1}'"
+# 
+# code_artifact_token := shell(get_auth_codeartifact_cli, domain, domain_owner, region)
+# export AWS_CODEARTIFACT_TOKEN := code_artifact_token
+# export UV_INDEX_CODEARTIFACT_USERNAME := "aws"
+# export UV_INDEX_CODEARTIFACT_PASSWORD := code_artifact_token
+# export UV_PUBLISH_USERNAME := "aws"
+# export UV_PUBLISH_PASSWORD := code_artifact_token
 
 # make sure to configure this profile as the default profile
 login profile="vuvuzella":
@@ -32,7 +33,7 @@ add +package:
 add-dev +package:
     uv add {{ package }} --group dev
 
-sync:
+install:
     uv sync
 
 test type="unit":
@@ -44,6 +45,7 @@ build:
 
 publish:
     uv publish --index codeartifact
+
 
 default:
     just --list

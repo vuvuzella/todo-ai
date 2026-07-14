@@ -2,18 +2,18 @@ from typing import Callable
 
 import pytest
 
-from domain.aggregates.tasks import CompleteTaskDTO, Task, UpdateTaskDTO
+from domain.aggregates.tasks import CompleteTaskDTO, Tasks, UpdateTaskDTO
 
 
 @pytest.fixture
 def task_factory():
     def _create_task():
-        return Task(name="Test Task", description="This is a test task.")
+        return Tasks(name="Test Task", description="This is a test task.")
 
     return _create_task
 
 
-def test_create_task(task_factory: Callable[[], Task]):
+def test_create_task(task_factory: Callable[[], Tasks]):
     task_1 = task_factory()
     task_2 = task_factory()
     assert task_1.id is not None
@@ -24,7 +24,7 @@ def test_create_task(task_factory: Callable[[], Task]):
     assert task_1.id != task_2.id  # Ensure unique IDs are generated for each task
 
 
-def test_update_task(task_factory: Callable[[], Task]):
+def test_update_task(task_factory: Callable[[], Tasks]):
     task = task_factory()
     original_version = task.version
 
@@ -43,7 +43,7 @@ def test_update_task(task_factory: Callable[[], Task]):
     assert updated_task.version == original_version + 1
 
 
-def test_complete_task(task_factory: Callable[[], Task]):
+def test_complete_task(task_factory: Callable[[], Tasks]):
     task = task_factory()
     original_version = task.version
 

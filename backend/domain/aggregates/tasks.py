@@ -5,6 +5,7 @@ from sqlalchemy import BigInteger, Column
 from sqlmodel import Field, SQLModel
 
 from domain.base import snowflake_generator
+from domain.aggregates.users import UsersWithTasks
 
 
 ## --- Create DTO --- ##
@@ -53,7 +54,7 @@ class CompleteTaskDTO(SQLModel):
 
 
 ## --- Domain Model --- ##
-class Task(SQLModel, table=True):
+class Tasks(SQLModel, table=True):
     __tablename__ = "tasks"
 
     id: int = Field(

@@ -3,7 +3,7 @@ from domain.aggregates.tasks import (
     CompleteTaskDTO,
     CreateTaskDTO,
     ReadTaskDTO,
-    Task,
+    Tasks,
     UpdateTaskDTO,
 )
 from fastapi import Depends, FastAPI, status
@@ -16,14 +16,14 @@ app = FastAPI()
 @app.get("/tasks", response_model=list[ReadTaskDTO], status_code=status.HTTP_200_OK)
 def get_tasts(
     task_repo: TaskRepository = Depends(YieldRepository(TaskRepository)),
-) -> list[Task]:
+) -> list[Tasks]:
     return task_repo.get_all_tasks()
 
 
 @app.get("/tasks/{task_id}", response_model=ReadTaskDTO, status_code=status.HTTP_200_OK)
 def get_task_by_id(
     task_id: int, task_repo: TaskRepository = Depends(YieldRepository(TaskRepository))
-) -> Task | None:
+) -> Tasks | None:
     return task_repo.get_task_by_id(task_id)
 
 
@@ -31,8 +31,8 @@ def get_task_by_id(
 def create_task(
     task: CreateTaskDTO,
     task_repo: TaskRepository = Depends(YieldRepository(TaskRepository)),
-) -> Task:
-    return task_repo.create_task(Task.from_create_dto(task))
+) -> Tasks:
+    return task_repo.create_task(Tasks.from_create_dto(task))
 
 
 @app.patch(

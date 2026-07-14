@@ -17,7 +17,9 @@ snowflake_generator = TwitterSnowflakeIDGenerator(
 )
 
 
-class DomainBaseConfigDict(ConfigDict): ...
+class DomainBaseConfigDict(ConfigDict):
+    ...
+    
 
 
 class DomainBaseModel(BaseModel):
