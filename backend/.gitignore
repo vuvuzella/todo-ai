@@ -6,3 +6,5 @@
 *.sqlite
 
 **/.pytest_cache
+.data
+.github
