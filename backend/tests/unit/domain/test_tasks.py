@@ -2,13 +2,19 @@ from typing import Callable
 
 import pytest
 
-from domain.aggregates.tasks import CompleteTaskDTO, Tasks, UpdateTaskDTO
+from domain.aggregates import Users
+from domain.aggregates import CompleteTaskDTO, Tasks, UpdateTaskDTO
 
 
 @pytest.fixture
 def task_factory():
     def _create_task():
-        return Tasks(name="Test Task", description="This is a test task.")
+        user = Users(username="testy")
+        return Tasks(
+            user_id=user.id,
+            user=user,
+            name="Test Task",
+            description="This is a test task.")
 
     return _create_task
 

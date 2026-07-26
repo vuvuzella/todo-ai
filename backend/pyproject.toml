@@ -83,7 +83,7 @@ datastar-todo = "applications.datastar_todo_app.app:start"
 # this is typically a path given in POSIX (e.g. forward slashes)
 # format, relative to the token %(here)s which refers to the location of this
 # ini file
-script_location = "%(here)s/migrations/alembic"
+script_location = "%(here)s/infrastructure/migrations/alembic"
 
 # template used to generate migration file names; The default value is %%(rev)s_%%(slug)s
 # Uncomment the line below if you want the files to be prepended with date and time
@@ -122,7 +122,7 @@ prepend_sys_path = [
 # to <script_location>/versions.  When using multiple version
 # directories, initial revisions must be specified with --version-path.
 version_locations = [
-   "%(here)s/migrations/alembic/versions",
+   "%(here)s/infrastructure/migrations/alembic/versions",
 #    "%(here)s/foo/bar"
 ]
 

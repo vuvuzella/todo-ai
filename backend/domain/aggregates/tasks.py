@@ -1,22 +1,23 @@
-from typing import Self
+from typing import Self, TYPE_CHECKING
 
 from pydantic import field_serializer
-from sqlalchemy import BigInteger, Column
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Column, Integer, ForeignKey, Relationship, SQLModel
 
-from domain.base import snowflake_generator
-from domain.aggregates.users import UsersWithTasks
+from domain.base import snowflake_generator, DomainBaseModel
+from domain.aggregates.users import Users
 
+if TYPE_CHECKING:
+    from .users import Users
 
 ## --- Create DTO --- ##
-class CreateTaskDTO(SQLModel):
+class CreateTaskDTO(DomainBaseModel):
     name: str
     description: str | None = None
     completed: bool = False
 
 
 ## --- Read DTO --- ##
-class ReadTaskDTO(SQLModel):
+class ReadTaskDTO(DomainBaseModel):
     id: int
 
     # We serialize the id into a string for the frontend
@@ -33,7 +34,7 @@ class ReadTaskDTO(SQLModel):
 
 
 ## --- Update DTO --- ##
-class UpdateTaskDTO(SQLModel):
+class UpdateTaskDTO(DomainBaseModel):
     version: int
 
     name: str | None = None
@@ -42,13 +43,13 @@ class UpdateTaskDTO(SQLModel):
 
 
 ## --- Delete DTO --- ##
-class DeleteTaskDTO(SQLModel):
+class DeleteTaskDTO(DomainBaseModel):
     id: int
     version: int
 
 
 ## --- Complete DTO --- ##
-class CompleteTaskDTO(SQLModel):
+class CompleteTaskDTO(DomainBaseModel):
     id: int
     version: int
 
@@ -67,6 +68,9 @@ class Tasks(SQLModel, table=True):
     name: str
     description: str | None = None
     completed: bool = False
+
+    user_id: int = Field(..., foreign_key="users.id")
+    user: Users = Relationship(back_populates="tasks")
 
     def _check_version(self, version: int) -> bool:
         if self.version != version:

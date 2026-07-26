@@ -10,7 +10,7 @@ from infrastructure.repositories.tasks import TaskRepository
 @pytest.fixture(scope="function")
 def new_task():
     return Tasks(
-        id=random.randint(1, 1000), name="New Task", description="New Description"
+        id=random.randint(1, 1000), name="New Task", description="New Description", user_id=1
     )
 
 

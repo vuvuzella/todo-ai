@@ -11,7 +11,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from migrations.alembic.config import settings as migration_settings
+from infrastructure.config import database_settings as migration_settings
 
 # revision identifiers, used by Alembic.
 revision: str = 'dabc93d3e41b'

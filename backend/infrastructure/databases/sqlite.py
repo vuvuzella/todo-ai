@@ -7,7 +7,7 @@ from infrastructure.databases.base import Database, DatabaseSettings
 
 
 class SqliteConfig(DatabaseSettings):
-    DB_URL: str
+    DB_URL: str = "Nope"
 
     @field_validator("DB_URL", mode="before")
     def db_url(cls, v, values: ValidationInfo):
