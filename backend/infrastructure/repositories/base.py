@@ -2,6 +2,7 @@ from fastapi import Depends
 from sqlmodel import Session
 
 from infrastructure.config import DBType, infra_settings
+from infrastructure.databases.postgresql import postgres_db
 from infrastructure.databases.sqlite import sqlite_db
 
 
@@ -16,7 +17,9 @@ class YieldSession:
             case DBType.SQLITE:
                 with sqlite_db.session() as session:
                     yield session
-                    session
+            case DBType.POSTGRES:
+                with postgres_db.session() as session:
+                    yield session
             case _:
                 raise Exception(f"Unknown database setting: {infra_settings.DB_TYPE}")
 

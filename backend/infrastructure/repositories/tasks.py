@@ -10,7 +10,9 @@ class TaskRepository(Repository):
         tasks = self.session.exec(select(Tasks)).all()
         return list(tasks)
 
-    def get_task_by_id(self, task_id: int, raise_not_found: bool = True) -> Tasks | None:
+    def get_task_by_id(
+        self, task_id: int, raise_not_found: bool = True
+    ) -> Tasks | None:
         # Code to retrieve a specific task by its ID from the database
         task = self.session.exec(select(Tasks).where(Tasks.id == task_id)).first()
         if task is None and raise_not_found:

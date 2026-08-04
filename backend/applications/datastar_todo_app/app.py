@@ -7,10 +7,12 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI()
 app.mount(
     "/static",
-    StaticFiles(directory="applications/datastar_todo_app/static"),
+    StaticFiles(directory="backend/applications/datastar_todo_app/static"),
     name="static",
 )
-templates = Jinja2Templates(directory="applications/datastar_todo_app/templates")
+templates = Jinja2Templates(
+    directory="backend/applications/datastar_todo_app/templates"
+)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -19,8 +21,10 @@ def get_main_page(request: Request):
 
 
 def start():
-    uvicorn.run(app=app, host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run(
+        "backend.applications.datastar_todo_app.app:start", host="0.0.0.0", port=8001
+    )
 
 
-if __name__ == "__main__":
-    start()
+# if __name__ == "__main__":
+#     start()

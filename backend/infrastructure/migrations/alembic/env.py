@@ -1,10 +1,8 @@
-from sqlalchemy.sql.expression import text
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, create_engine
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import create_engine, engine_from_config, pool
+from sqlalchemy.sql.expression import text
 
 from infrastructure.config import database_settings as migration_settings
 
@@ -55,20 +53,28 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 def db_exists(db_name: str, db_url: str) -> bool:
     """Check if a database exists."""
     engine = create_engine(url=f"{db_url.rsplit('/', 1)[0]}")
     with engine.connect() as connection:
-        result = connection.execute(text("SELECT 1 FROM pg_database WHERE datname = :dbname"), {'dbname': db_name})
+        result = connection.execute(
+            text("SELECT 1 FROM pg_database WHERE datname = :dbname"),
+            {"dbname": db_name},
+        )
         return result.scalar() is not None
+
 
 def create_db(db_name: str, db_url: str) -> None:
     """Create a database."""
     engine = create_engine(url=f"{db_url.rsplit('/', 1)[0]}")
 
     with engine.connect() as connection:
-        connection.execution_options(isolation_level="AUTOCOMMIT").execute(text(f"CREATE DATABASE {db_name}"))
+        connection.execution_options(isolation_level="AUTOCOMMIT").execute(
+            text(f"CREATE DATABASE {db_name}")
+        )
         print(f"Database '{db_name}' created successfully.")
+
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
@@ -91,9 +97,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

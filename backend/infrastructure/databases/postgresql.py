@@ -1,4 +1,7 @@
+from contextlib import contextmanager
+
 from pydantic import ValidationInfo, field_validator
+from sqlmodel import Session, create_engine
 
 from infrastructure.config import DatabaseSettings
 from infrastructure.databases.base import Database
@@ -9,31 +12,29 @@ class PostgreConfig(DatabaseSettings):
 
     @field_validator("DB_URL", mode="before")
     def db_url(cls, v, values: ValidationInfo):
-        username = values.data.get("DB_USERNAME", "Nope")
-        password = values.data.get("DB_PASSWORD", "Nope")
+        username = values.data.get("DB_USER", "Nope")
+        password = values.data.get("DB_PASS", "Nope")
         db_name = values.data.get("DB_NAME", "Nope")
         db_port = values.data.get("DB_PORT", 123)
-        db_protocol = values.data.get("DB_PROTOCOL", "Nope")
+        db_protocol = values.data.get("DB_PTCL", "Nope")
         db_host = values.data.get("DB_HOST", "Nope")
         return f"{db_protocol}://{username}:{password}@{db_host}:{db_port}/{db_name}"
 
 
+postgres_db_config = PostgreConfig()
+
+
 class PostgreSQL(Database):
-    def __init__(self, host: str, port: int, user: str, password: str, database: str):
-        self.host = host
-        self.port = port
-        self.user = user
-        self.password = password
-        self.database = database
+    def __init__(self, db_url: str | None = None):
+        url = db_url or postgres_db_config.DB_URL
+        self._engine = create_engine(f"{url}", echo=True)
 
-    def connect(self):
-        # Code to establish a connection to the PostgreSQL database
-        pass
+    @contextmanager
+    def session(self):
+        with Session(self._engine) as session:
+            yield session
+            session.flush()
+            session.commit()
 
-    def disconnect(self):
-        # Code to close the connection to the PostgreSQL database
-        pass
 
-    def execute_query(self, query):
-        # Code to execute a SQL query on the PostgreSQL database
-        pass
+postgres_db = PostgreSQL()

@@ -1,17 +1,41 @@
-from backend.domain.base import snowflake_generator
-from sqlmodel import Relationship, Field, SQLModel
 from typing import TYPE_CHECKING
-from domain.base import DomainBaseModel
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+
+from sqlmodel import BigInteger, Field, Relationship
+
+from domain.aggregates.base import SQLModelBase
+from domain.base import DomainBaseModel, generate_js_safe_sf_id
 
 if TYPE_CHECKING:
-    # from domain.aggregates.todos import Todos
     from domain.aggregates.tasks import Tasks
-class Users(SQLModel, table=True):
-    __tablename__ = 'users'
-    id: int = Field(
-        default_factory=snowflake_generator.generate_next_id,
-        primary_key=True)
+
+
+## --- DTO Models --- ##
+class ReadUserDTO(DomainBaseModel):
+    id: int
+    version: int
     username: str
-    tasks: list['Tasks'] = Relationship(back_populates="user")
+
+    tasks: list["Tasks"]
+
+
+class CreateUserDTO(DomainBaseModel):
+    username: str
+
+
+## --- Domain Model --- ##
+
+
+class Users(SQLModelBase, table=True):
+    __tablename__ = "users"
+    id: int = Field(
+        default_factory=generate_js_safe_sf_id,
+        sa_type=BigInteger,
+        primary_key=True,
+        sa_column_kwargs={"autoincrement": False},
+        # autoincrement=False,
+        # sa_column=Column(BigInteger(), primary_key=True, autoincrement=False),
+    )
+
+    version: int = Field(default=0)
+    username: str
+    tasks: list["Tasks"] = Relationship(back_populates="user")

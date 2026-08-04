@@ -1,20 +1,34 @@
 import uvicorn
-from domain.aggregates.tasks import (
+from fastapi import Depends, FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
+
+from domain.aggregates import (
     CompleteTaskDTO,
     CreateTaskDTO,
+    CreateUserDTO,
     ReadTaskDTO,
+    ReadUserDTO,
     Tasks,
     UpdateTaskDTO,
+    Users,
 )
-from fastapi import Depends, FastAPI, status
 from infrastructure.repositories.base import YieldRepository
 from infrastructure.repositories.tasks import TaskRepository
+from infrastructure.repositories.users import UserRepository
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/tasks", response_model=list[ReadTaskDTO], status_code=status.HTTP_200_OK)
-def get_tasts(
+def get_tasks(
     task_repo: TaskRepository = Depends(YieldRepository(TaskRepository)),
 ) -> list[Tasks]:
     return task_repo.get_all_tasks()
@@ -76,5 +90,28 @@ def complete_task(
     return task
 
 
+@app.post("/users", response_model=ReadUserDTO, status_code=status.HTTP_201_CREATED)
+def create_user(
+    payload: CreateUserDTO,
+    user_repo: UserRepository = Depends(YieldRepository(UserRepository)),
+):
+    user = Users.model_validate(payload)
+    user = user_repo.create_user(user)
+    return user
+
+
+@app.get("/users", response_model=list[ReadUserDTO], status_code=status.HTTP_200_OK)
+def get_all_user(
+    user_repo: UserRepository = Depends(YieldRepository(UserRepository)),
+):
+    return user_repo.get_all_users()
+
+
 def start():
-    uvicorn.run(app=app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "applications.api.app:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        reload_dirs=["applications", "domain", "infrastructure"],
+    )

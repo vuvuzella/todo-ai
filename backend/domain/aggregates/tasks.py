@@ -1,19 +1,20 @@
-from typing import Self, TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
-from pydantic import field_serializer
-from sqlmodel import Field, Column, Integer, ForeignKey, Relationship, SQLModel
+from sqlmodel import BigInteger, Field, Relationship
 
-from domain.base import snowflake_generator, DomainBaseModel
-from domain.aggregates.users import Users
+from domain.aggregates.base import SQLModelBase
+from domain.base import DomainBaseModel, generate_js_safe_sf_id
 
 if TYPE_CHECKING:
-    from .users import Users
+    from domain.aggregates.users import Users
+
 
 ## --- Create DTO --- ##
 class CreateTaskDTO(DomainBaseModel):
     name: str
     description: str | None = None
     completed: bool = False
+    user_id: int
 
 
 ## --- Read DTO --- ##
@@ -22,9 +23,9 @@ class ReadTaskDTO(DomainBaseModel):
 
     # We serialize the id into a string for the frontend
     # frontend can send this to backend as int/string
-    @field_serializer("id")
-    def serialize_id(self, v: int) -> str:
-        return str(v)
+    # @field_serializer("id")
+    # def serialize_id(self, v: int) -> str:
+    #     return str(v)
 
     version: int
 
@@ -51,16 +52,20 @@ class DeleteTaskDTO(DomainBaseModel):
 ## --- Complete DTO --- ##
 class CompleteTaskDTO(DomainBaseModel):
     id: int
+
     version: int
 
 
 ## --- Domain Model --- ##
-class Tasks(SQLModel, table=True):
+class Tasks(SQLModelBase, table=True):
     __tablename__ = "tasks"
 
     id: int = Field(
-        default_factory=snowflake_generator.generate_next_id,
+        default_factory=generate_js_safe_sf_id,
+        sa_type=BigInteger,
         primary_key=True,
+        sa_column_kwargs={"autoincrement": False},
+        # sa_column=Column(BigInteger(), primary_key=True, autoincrement=False),
     )
 
     version: int = Field(default=0)
@@ -69,8 +74,9 @@ class Tasks(SQLModel, table=True):
     description: str | None = None
     completed: bool = False
 
-    user_id: int = Field(..., foreign_key="users.id")
-    user: Users = Relationship(back_populates="tasks")
+    # user_id: int = Field(..., sa_column=Column(BigInteger(), ForeignKey("users.id")))
+    user_id: int = Field(foreign_key="users.id")
+    user: "Users" = Relationship(back_populates="tasks")
 
     def _check_version(self, version: int) -> bool:
         if self.version != version:

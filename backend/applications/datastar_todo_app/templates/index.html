@@ -9,6 +9,13 @@
   </head>
   <body>
     <h1>Datastar Todo App</h1>
-    <p>Hello World!</p>
+    <div>
+      <!-- Controls -->
+       <button data-on:click="@get('http://localhost:8000/tasks')">Refresh</button>
+       <button>New</button>
+    </div>
+    <div>
+      <!-- Todos -->
+    </div>
   </body>
 </html>

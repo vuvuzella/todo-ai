@@ -597,6 +597,15 @@ wheels = [
 ]
 
 [[package]]
+name = "snowflakekit"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/3c/ae793d3ba6686f7e2138483e0e1535bd5f359e24440f9fe4e4be62d367c8/snowflakekit-0.1.1.tar.gz", hash = "sha256:bba4b036a2f1de66065138696ac56d05c196875a340be2f4a6a73e2b123e446c", size = 8429, upload-time = "2025-05-27T05:30:48.139Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/78/3663b2342816564735190815cfaf705fb383c9b390b345ce8c99b68a99c8/snowflakekit-0.1.1-py3-none-any.whl", hash = "sha256:3352b9944943d700d8bea7850af7758a138ea36fae2fab0cef5fd3f158e210a9", size = 5039, upload-time = "2025-05-27T05:30:46.407Z" },
+]
+
+[[package]]
 name = "sqlalchemy"
 version = "2.0.48"
 source = { registry = "https://pypi.org/simple" }
@@ -675,6 +684,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
     { name = "snowflake-id-toolkit" },
+    { name = "snowflakekit" },
     { name = "sqlmodel" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -707,6 +717,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.13.1" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "snowflake-id-toolkit", specifier = ">=0.6.0" },
+    { name = "snowflakekit", specifier = ">=0.1.1" },
     { name = "sqlmodel", specifier = ">=0.0.38" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.41.0" },
 ]

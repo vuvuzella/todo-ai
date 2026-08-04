@@ -23,6 +23,7 @@ class InfraSettings(SettingsModel):
 from pydantic import model_validator
 from pydantic_config.main import SettingsModel
 
+
 class DatabaseSettings(SettingsModel):
     DB_PTCL: str = "Nope"
     DB_NAME: str = "Nope"
@@ -47,11 +48,14 @@ class DatabaseSettings(SettingsModel):
 
             if db_url is None:
                 # db_url = f"{db_ptcl}://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}?sslmode=allow"
-                db_url = f"{db_ptcl}://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+                db_url = (
+                    f"{db_ptcl}://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+                )
                 values["DB_URL"] = db_url
 
         return values
-    
+
+
 database_settings = DatabaseSettings()
 
 infra_settings = InfraSettings()

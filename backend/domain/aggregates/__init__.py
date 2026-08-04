@@ -1,3 +1,6 @@
+from .tasks import CompleteTaskDTO, CreateTaskDTO, ReadTaskDTO, Tasks, UpdateTaskDTO
+from .users import CreateUserDTO, ReadUserDTO, Users
 
-from .tasks import Tasks, CompleteTaskDTO, UpdateTaskDTO
-from .users import Users
+Users.model_rebuild()
+Tasks.model_rebuild()
+ReadUserDTO.model_rebuild()

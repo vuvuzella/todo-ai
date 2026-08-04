@@ -36,6 +36,24 @@ add-dev +package:
 install:
     uv sync
 
+_migrate_upgrade version:
+    uv run alembic upgrade '{{ version }}'
+
+_migrate_downgrade version:
+    uv run alembic downgrade '{{ version }}'
+
+_migrate_revision label:
+    uv run alembic revision -m '{{ label }}'
+
+migrate command="upgrade" version="head":
+    case {{ command }} in \
+        upgrade) just _migrate_upgrade '{{ version }}';; \
+        downgrade) just _migrate_downgrade '{{ version }}';; \
+        revision) just _migrate_revision '{{ version }}';; \
+        *) uv run alembic {{ command }} '{{ version }}';; \
+    esac
+
+
 test type="unit":
     uv run pytest ./tests/{{ type }} -vvsrP
     # uv run pytest ./tests -vvsrP
