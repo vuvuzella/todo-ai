@@ -32,6 +32,7 @@ class ReadTaskDTO(DomainBaseModel):
     name: str
     description: str | None = None
     completed: bool
+    user_id: int
 
 
 ## --- Update DTO --- ##
@@ -75,7 +76,7 @@ class Tasks(SQLModelBase, table=True):
     completed: bool = False
 
     # user_id: int = Field(..., sa_column=Column(BigInteger(), ForeignKey("users.id")))
-    user_id: int = Field(foreign_key="users.id")
+    user_id: int = Field(foreign_key="users.id", sa_type=BigInteger)
     user: "Users" = Relationship(back_populates="tasks")
 
     def _check_version(self, version: int) -> bool:
@@ -89,11 +90,13 @@ class Tasks(SQLModelBase, table=True):
 
     @classmethod
     def from_create_dto(cls, dto: CreateTaskDTO) -> Self:
-        return cls(
-            name=dto.name,
-            description=dto.description,
-            completed=dto.completed,
-        )
+        # return cls(
+        #     name=dto.name,
+        #     description=dto.description,
+        #     completed=dto.completed,
+        #     user_id=dto.user_id
+        # )
+        return cls.model_validate(dto)
 
     def update_from_dto(self, dto: UpdateTaskDTO) -> Self:
 

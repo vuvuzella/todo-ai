@@ -42,3 +42,7 @@ class TaskRepository(Repository):
         # Code to delete a task from the database
         self.session.exec(Delete(Tasks).where(Tasks.id == task_id))  # ty:ignore[invalid-argument-type]:wa
         self.session.commit()
+
+    def get_task_by_user_id(self, user_id: int) -> list[Tasks]:
+        tasks = self.session.exec(select(Tasks).filter_by(user_id=user_id)).all()
+        return list(tasks)

@@ -107,6 +107,18 @@ def get_all_user(
     return user_repo.get_all_users()
 
 
+@app.get(
+    "/users/{user_id}/tasks",
+    response_model=list[ReadTaskDTO],
+    status_code=status.HTTP_200_OK,
+)
+def get_all_tasks_from_user(
+    user_id: int, task_repo: TaskRepository = Depends(YieldRepository(TaskRepository))
+):
+    tasks = task_repo.get_task_by_user_id(user_id)
+    return tasks
+
+
 def start():
     uvicorn.run(
         "applications.api.app:app",
