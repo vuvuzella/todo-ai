@@ -11,8 +11,11 @@
     <h1>Datastar Todo App</h1>
     <div>
       <!-- Controls -->
-       <button data-on:click="@get('http://localhost:8000/tasks')">Refresh</button>
-       <button>New</button>
+      <button data-on:click="@get('http://localhost:8000/tasks')">
+        Refresh
+      </button>
+      <button>New</button>
+      <a href="/auth/logout" class="button logout">Log Out</a>
     </div>
     <div>
       <!-- Todos -->

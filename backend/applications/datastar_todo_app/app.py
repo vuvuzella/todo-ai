@@ -1,10 +1,33 @@
+import asyncio
+
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from auth0_fastapi.auth import AuthClient
+from auth0_fastapi.config import Auth0Config
+from auth0_fastapi.server.routes import register_auth_routes, router
+from fastapi import Depends, FastAPI, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
+
+from applications.datastar_todo_app.config import datastar_config
+
+auth0_config = Auth0Config(
+    domain=datastar_config.AUTH0_DOMAIN,
+    client_id=datastar_config.AUTH0_CLIENT_ID,
+    client_secret=datastar_config.AUTH0_CLIENT_SECRET,
+    app_base_url=datastar_config.API_BASE_URL,
+    secret=datastar_config.SESSION_SECRET,
+)  # ty:ignore[missing-argument]
+
+auth_client = AuthClient(auth0_config)
 
 app = FastAPI()
+app.state.config = auth0_config
+app.state.auth_client = auth_client
+
+app.add_middleware(SessionMiddleware, secret_key=datastar_config.AUTH0_CLIENT_SECRET)
+
 app.mount(
     "/static",
     StaticFiles(directory="applications/datastar_todo_app/static"),
@@ -14,13 +37,32 @@ templates = Jinja2Templates(directory="applications/datastar_todo_app/templates"
 
 
 @app.get("/", response_class=HTMLResponse)
-def get_main_page(request: Request):
-    return templates.TemplateResponse(request=request, name="index.html")
+async def get_main_route_check(request: Request, response: Response):
+    store_options = {"request": request, "response": response}
+    session = await auth_client.client.get_session(store_options)
+    if session is not None:
+        return RedirectResponse("/home")
+    else:
+        return RedirectResponse("/auth/login")
 
 
-def start():
+@app.get("/home", response_class=HTMLResponse)
+async def get_home(request: Request, session=Depends(auth_client.require_session)):
+    return templates.TemplateResponse(request=request, name="home.html")
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def get_login(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html")
+
+
+register_auth_routes(router, auth0_config)
+app.include_router(router)
+
+
+async def start():
     uvicorn.run("applications.datastar_todo_app.app:start", host="0.0.0.0", port=8001)
 
 
-# if __name__ == "__main__":
-#     start()
+if __name__ == "__main__":
+    asyncio.run(start())

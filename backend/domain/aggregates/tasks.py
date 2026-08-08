@@ -75,7 +75,6 @@ class Tasks(SQLModelBase, table=True):
     description: str | None = None
     completed: bool = False
 
-    # user_id: int = Field(..., sa_column=Column(BigInteger(), ForeignKey("users.id")))
     user_id: int = Field(foreign_key="users.id", sa_type=BigInteger)
     user: "Users" = Relationship(back_populates="tasks")
 
@@ -90,12 +89,6 @@ class Tasks(SQLModelBase, table=True):
 
     @classmethod
     def from_create_dto(cls, dto: CreateTaskDTO) -> Self:
-        # return cls(
-        #     name=dto.name,
-        #     description=dto.description,
-        #     completed=dto.completed,
-        #     user_id=dto.user_id
-        # )
         return cls.model_validate(dto)
 
     def update_from_dto(self, dto: UpdateTaskDTO) -> Self:
