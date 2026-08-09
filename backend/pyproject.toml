@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "auth0-fastapi>=1.0.0b10",
+    "auth0-fastapi-api>=1.0.0b8",
     "fastapi>=0.135.1",
     "fastapi-cors>=0.0.6",
     "itsdangerous>=2.2.0",
@@ -196,6 +197,7 @@ target-version = "py310"
 # select = [...]  # See the Default Rules page for the full listing.
 ignore = [
     "TC004", # Ignore using imports for type checking
+    "B008"  # Ignore calling Depends as parameter defaults in endpoint handlers
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

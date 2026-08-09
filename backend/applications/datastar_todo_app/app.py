@@ -5,6 +5,7 @@ from auth0_fastapi.auth import AuthClient
 from auth0_fastapi.config import Auth0Config
 from auth0_fastapi.server.routes import register_auth_routes, router
 from fastapi import Depends, FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -14,6 +15,7 @@ from applications.datastar_todo_app.config import datastar_config
 
 auth0_config = Auth0Config(
     domain=datastar_config.AUTH0_DOMAIN,
+    audience=datastar_config.AUTH0_AUDIENCE.unicode_host(),
     client_id=datastar_config.AUTH0_CLIENT_ID,
     client_secret=datastar_config.AUTH0_CLIENT_SECRET,
     app_base_url=datastar_config.API_BASE_URL,
@@ -23,6 +25,15 @@ auth0_config = Auth0Config(
 auth_client = AuthClient(auth0_config)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.state.config = auth0_config
 app.state.auth_client = auth_client
 
@@ -47,8 +58,21 @@ async def get_main_route_check(request: Request, response: Response):
 
 
 @app.get("/home", response_class=HTMLResponse)
-async def get_home(request: Request, session=Depends(auth_client.require_session)):
-    return templates.TemplateResponse(request=request, name="home.html")
+async def get_home(
+    request: Request, session: dict = Depends(auth_client.require_session)
+):
+    token_sets = session.get("token_sets")
+    token = token_sets[0].get("access_token", None) if token_sets is not None else None
+    # auth0_id
+    return templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context={
+            "request": request,
+            "api_url": datastar_config.API_ENDPOINT,
+            "access_token": token,
+        },
+    )
 
 
 @app.get("/login", response_class=HTMLResponse)

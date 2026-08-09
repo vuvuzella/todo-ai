@@ -25,6 +25,7 @@ def upgrade() -> None:
         sa.Column("id", sa.BIGINT, autoincrement=False, primary_key=True),
         sa.Column("version", sa.Integer),
         sa.Column("username", sa.Text, nullable=False),
+        sa.Column("auth0_id", sa.Text, nullable=True, unique=True),
         if_not_exists=True,
     )
 

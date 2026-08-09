@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import Any
 
 from pydantic_config.main import SettingsModel
 
@@ -34,8 +35,12 @@ class DatabaseSettings(SettingsModel):
 
     DB_URL: str = "Nope"
 
+    TEST1_AUTH0_ID: str = "Nope"
+    TEST2_AUTH0_ID: str = "Nope"
+    TEST3_AUTH0_ID: str = "Nope"
+
     @model_validator(mode="before")
-    def create_db_url(cls, values: any):
+    def create_db_url(cls, values: Any):
         if isinstance(values, dict):
             db_ptcl = values.get("DB_PTCL", "Nope")
             db_name = values.get("DB_NAME", "Nope")

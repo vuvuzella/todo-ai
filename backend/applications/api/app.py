@@ -1,7 +1,10 @@
 import uvicorn
-from fastapi import Depends, FastAPI, status
+from fastapi import Depends, FastAPI, Security, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
+from fastapi_plugin import Auth0FastAPI
 
+from applications.api.config import api_settings
 from domain.aggregates import (
     CompleteTaskDTO,
     CreateTaskDTO,
@@ -16,6 +19,11 @@ from infrastructure.repositories.base import YieldRepository
 from infrastructure.repositories.tasks import TaskRepository
 from infrastructure.repositories.users import UserRepository
 
+auth0 = Auth0FastAPI(
+    domain=api_settings.AUTH0_DOMAIN,
+    audience=api_settings.AUTH0_AUDIENCE,
+)
+
 app = FastAPI()
 
 app.add_middleware(
@@ -26,10 +34,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+token_auth_scheme = HTTPBearer(auto_error=False)
 
-@app.get("/tasks", response_model=list[ReadTaskDTO], status_code=status.HTTP_200_OK)
+# TODO: secure apis
+# TODO: make frontend fetch user data from database given an access token
+# TODO: make frontend fetch and render all tasks given a user id
+
+
+@app.get(
+    "/tasks",
+    response_model=list[ReadTaskDTO],
+    status_code=status.HTTP_200_OK,
+    dependencies=[Security(token_auth_scheme)],
+)
 def get_tasks(
     task_repo: TaskRepository = Depends(YieldRepository(TaskRepository)),
+    claims: dict = Depends(auth0.require_auth()),
 ) -> list[Tasks]:
     return task_repo.get_all_tasks()
 

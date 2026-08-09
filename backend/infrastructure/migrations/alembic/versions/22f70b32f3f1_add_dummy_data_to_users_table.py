@@ -9,6 +9,9 @@ Create Date: 2026-08-08 02:29:25.268758
 from collections.abc import Sequence
 
 from alembic import op
+from sqlalchemy.sql.expression import text
+
+from infrastructure.config import database_settings
 
 # revision identifiers, used by Alembic.
 revision: str = "22f70b32f3f1"
@@ -19,18 +22,28 @@ depends_on: str | Sequence[str] | None = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    op.execute("""
-        INSERT INTO users (id, version, username) VALUES
-        (1, 1, 'user1'),
-        (2, 1, 'user2'),
-        (3, 1, 'user3'),
-        (4, 1, 'user4'),
-        (5, 1, 'user5')
-    """)
+    connection = op.get_bind()
+
+    params = (
+        {
+            "test1": database_settings.TEST1_AUTH0_ID,
+            "test2": database_settings.TEST2_AUTH0_ID,
+            "test3": database_settings.TEST3_AUTH0_ID,
+        },
+    )
+    connection.execute(
+        text("""
+        INSERT INTO users (id, version, username, auth0_id) VALUES
+        (1, 0, 'user1', :test1),
+        (2, 0, 'user2', :test2),
+        (2894388762935840, 0, 'j.tabac', :test3)
+    """),
+        params,
+    )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     op.execute("""
-        DELETE FROM users WHERE id IN (1, 2, 3, 4, 5);
+        DELETE FROM users WHERE id IN (1, 2, 2894388762935840);
     """)

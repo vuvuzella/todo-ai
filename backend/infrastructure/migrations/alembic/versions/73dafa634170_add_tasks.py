@@ -28,7 +28,12 @@ def upgrade() -> None:
         sa.Column("name", sa.Text),
         sa.Column("description", sa.Text, nullable=True),
         sa.Column("completed", sa.Boolean),
-        sa.Column("user_id", sa.BIGINT, ForeignKey("users.id"), autoincrement=False),
+        sa.Column(
+            "user_id",
+            sa.BIGINT,
+            ForeignKey("users.id", ondelete="CASCADE"),
+            autoincrement=False,
+        ),
         if_not_exists=True,
     )
 
