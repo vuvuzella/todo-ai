@@ -4,7 +4,7 @@ import uvicorn
 from auth0_fastapi.auth import AuthClient
 from auth0_fastapi.config import Auth0Config
 from auth0_fastapi.server.routes import register_auth_routes, router
-from fastapi import Depends, FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,6 +12,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from applications.datastar_todo_app.config import datastar_config
+from applications.datastar_todo_app.web.tasks import tasks_router
 
 auth0_config = Auth0Config(
     domain=datastar_config.AUTH0_DOMAIN,
@@ -52,27 +53,27 @@ async def get_main_route_check(request: Request, response: Response):
     store_options = {"request": request, "response": response}
     session = await auth_client.client.get_session(store_options)
     if session is not None:
-        return RedirectResponse("/home")
+        return RedirectResponse("/tasks")
     else:
         return RedirectResponse("/auth/login")
 
 
-@app.get("/home", response_class=HTMLResponse)
-async def get_home(
-    request: Request, session: dict = Depends(auth_client.require_session)
-):
-    token_sets = session.get("token_sets")
-    token = token_sets[0].get("access_token", None) if token_sets is not None else None
-    # auth0_id
-    return templates.TemplateResponse(
-        request=request,
-        name="home.html",
-        context={
-            "request": request,
-            "api_url": datastar_config.API_ENDPOINT,
-            "access_token": token,
-        },
-    )
+# @app.get("/home", response_class=HTMLResponse)
+# async def get_home(
+#     request: Request, session: dict = Depends(auth_client.require_session)
+# ):
+#     token_sets = session.get("token_sets")
+#     token = token_sets[0].get("access_token", None) if token_sets is not None else None
+#     # auth0_id
+#     return templates.TemplateResponse(
+#         request=request,
+#         name="home.html",
+#         context={
+#             "request": request,
+#             "api_url": datastar_config.API_ENDPOINT,
+#             "access_token": token,
+#         },
+#     )
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -81,6 +82,7 @@ async def get_login(request: Request):
 
 
 register_auth_routes(router, auth0_config)
+app.include_router(tasks_router)
 app.include_router(router)
 
 

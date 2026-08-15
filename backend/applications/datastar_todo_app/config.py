@@ -1,5 +1,7 @@
-from pydantic import HttpUrl
+from pydantic import AnyUrl, HttpUrl
 from pydantic_settings import BaseSettings
+
+from domain.value_objects import CleanAnyUrl
 
 
 class DatastarAppSettings(BaseSettings):
@@ -11,7 +13,7 @@ class DatastarAppSettings(BaseSettings):
     API_BASE_URL: HttpUrl = HttpUrl("http://localhost:8001")
     COOKIE_SECURE: bool = False
 
-    API_ENDPOINT: HttpUrl = HttpUrl("http://none.none.none")
+    API_ENDPOINT: CleanAnyUrl = AnyUrl("http://none.none.none")
 
 
 datastar_config = DatastarAppSettings()

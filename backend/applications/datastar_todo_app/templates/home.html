@@ -9,11 +9,11 @@
   </head>
   <body>
     <h1>Datastar Todo App</h1>
-    <div>
+    <div data-on-load="@get('{{ api_url }}/tasks')">
       <div data-signals='{"access_token": "{{ access_token }}"}'></div>
       <!-- Controls -->
       <button
-        data-on:click="@get('{{ api_url }}tasks', {headers: {Authorization: 'Bearer ' + $access_token}})"
+        data-on:click="@get('{{ api_url }}/tasks', {headers: {Authorization: 'Bearer ' + $access_token}, filterSignals: { exclude: '.*'}})"
       >
         Refresh
       </button>

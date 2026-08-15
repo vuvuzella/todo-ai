@@ -1,6 +1,5 @@
 # import datetime
 
-import asyncio
 
 from pydantic import BaseModel, ConfigDict
 from pydantic_config.main import SettingsModel
@@ -33,9 +32,9 @@ sf_config = SnowflakeConfig(
 snowflake_generator = SnowflakeGenerator(config=sf_config)
 
 
-def generate_js_safe_sf_id():
+async def generate_js_safe_sf_id():
     # return snowflake_generator.generate_next_id()
-    return asyncio.run(snowflake_generator.generate())
+    return snowflake_generator.generate()
 
 
 class DomainBaseConfigDict(ConfigDict): ...

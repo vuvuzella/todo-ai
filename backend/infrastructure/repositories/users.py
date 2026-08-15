@@ -17,6 +17,11 @@ class UserRepository(Repository):
 
         return user
 
+    def get_user_by_auth0_id(self, auth0_id: str):
+        stmt = select(Users).filter_by(auth0_id=auth0_id)
+        user = self.session.exec(stmt).one()
+        return user
+
     def create_user(self, new_user: Users) -> Users:
         result = self.session.scalar(select(Users.id).where(Users.id == new_user.id))
         if result is not None:

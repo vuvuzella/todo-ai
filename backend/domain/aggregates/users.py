@@ -32,10 +32,9 @@ class Users(SQLModelBase, table=True):
         sa_type=BigInteger,
         primary_key=True,
         sa_column_kwargs={"autoincrement": False},
-        # autoincrement=False,
-        # sa_column=Column(BigInteger(), primary_key=True, autoincrement=False),
     )
 
     version: int = Field(default=0)
     username: str
+    auth0_id: str | None = None
     tasks: list["Tasks"] = Relationship(back_populates="user")

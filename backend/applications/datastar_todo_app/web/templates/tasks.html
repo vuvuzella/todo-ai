@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tasks - A Datastar Application</title>
+    <!-- <script type="module" src="/static/js/datastar.js"></script> -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js"
+    ></script>
+  </head>
+  <body>
+    <h1>Tasks - A Datastar Application</h1>
+
+    <!-- Signals for form state -->
+    <!-- <div data-signals='{"taskName": "", "taskDescription": ""}'></div> -->
+
+    <div id="task-list" data-init="@get('/tasks/fragments/list')"></div>
+  </body>
+</html>

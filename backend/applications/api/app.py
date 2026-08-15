@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import Depends, FastAPI, Security, status
+from fastapi import Depends, FastAPI, Query, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from fastapi_plugin import Auth0FastAPI
@@ -123,7 +123,13 @@ def create_user(
 @app.get("/users", response_model=list[ReadUserDTO], status_code=status.HTTP_200_OK)
 def get_all_user(
     user_repo: UserRepository = Depends(YieldRepository(UserRepository)),
+    auth0_id: str | None = Query(
+        default=None,
+        description="use an auth0_id parameter to retrieve a specific user",
+    ),
 ):
+    if auth0_id is not None:
+        return user_repo
     return user_repo.get_all_users()
 
 
