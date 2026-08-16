@@ -1,9 +1,16 @@
-from fastapi import APIRouter, Request, Security, status
+from fastapi import APIRouter, Depends, Request, Security, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from applications.datastar_todo_app.auth import require_session_or_redirect
+from applications.datastar_todo_app.auth import (
+    Auth0Session,
+    get_app_session,
+    require_session_or_redirect,
+)
 from domain.aggregates.tasks import CreateTaskDTO, Tasks
+from domain.aggregates.users import ReadUserDTO
+from infrastructure.repositories.base import YieldRepository
+from infrastructure.repositories.users import UserRepository
 
 # All in one python file for this small feature
 
@@ -20,8 +27,19 @@ page_routes = APIRouter()
 
 
 @page_routes.get("/", response_class=HTMLResponse, status_code=status.HTTP_200_OK)
-async def get_tasks_page(request: Request):
-    return templates.TemplateResponse(request=request, name="tasks.html", context={})
+async def get_tasks_page(
+    request: Request,
+    session: Auth0Session = Depends(get_app_session),
+    user_repo: UserRepository = Depends(YieldRepository(UserRepository)),
+):
+    if session.token_set is not None:
+        user = await user_repo.get_user_by_auth0_id(session.token_set.auth0_id)
+        user_read = ReadUserDTO.model_validate(user)
+    return templates.TemplateResponse(
+        request=request,
+        name="tasks.html",
+        context={"user": user_read.model_dump(exclude_unset=True)},
+    )
 
 
 @page_routes.post("/", response_class=HTMLResponse, status_code=status.HTTP_201_CREATED)

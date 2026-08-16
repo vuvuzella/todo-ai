@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from pydantic import ConfigDict
 from sqlmodel import BigInteger, Field, Relationship
 
 from domain.aggregates.base import SQLModelBase
@@ -11,9 +12,11 @@ if TYPE_CHECKING:
 
 ## --- DTO Models --- ##
 class ReadUserDTO(DomainBaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     version: int
     username: str
+    auth0_id: str | None = None
 
     tasks: list["Tasks"]
 
