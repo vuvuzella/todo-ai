@@ -1,8 +1,6 @@
 import asyncio
 
 import uvicorn
-from auth0_fastapi.auth import AuthClient
-from auth0_fastapi.config import Auth0Config
 from auth0_fastapi.server.routes import register_auth_routes, router
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,19 +9,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
+from applications.datastar_todo_app.auth import auth0_config, auth_client
 from applications.datastar_todo_app.config import datastar_config
 from applications.datastar_todo_app.web.tasks import tasks_router
-
-auth0_config = Auth0Config(
-    domain=datastar_config.AUTH0_DOMAIN,
-    audience=datastar_config.AUTH0_AUDIENCE.unicode_host(),
-    client_id=datastar_config.AUTH0_CLIENT_ID,
-    client_secret=datastar_config.AUTH0_CLIENT_SECRET,
-    app_base_url=datastar_config.API_BASE_URL,
-    secret=datastar_config.SESSION_SECRET,
-)  # ty:ignore[missing-argument]
-
-auth_client = AuthClient(auth0_config)
 
 app = FastAPI()
 

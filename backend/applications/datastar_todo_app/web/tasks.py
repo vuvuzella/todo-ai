@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, Security, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from applications.datastar_todo_app.auth import require_session_or_redirect
 from domain.aggregates.tasks import CreateTaskDTO, Tasks
 
 # All in one python file for this small feature
@@ -10,7 +11,9 @@ from domain.aggregates.tasks import CreateTaskDTO, Tasks
 
 templates = Jinja2Templates("applications/datastar_todo_app/web/templates")
 
-tasks_router = APIRouter(prefix="/tasks")
+tasks_router = APIRouter(
+    prefix="/tasks", dependencies=[Security(require_session_or_redirect, scopes=[])]
+)
 ##-- Pages ---------------------------------------#
 
 page_routes = APIRouter()
@@ -48,17 +51,6 @@ async def get_tasks_list_fragment(request: Request):
             CreateTaskDTO(name="task3", description="task3 description", user_id=123)
         ),
     ]
-    # html = templates.get_template("partials/task_list.html").render(tasks=tasks)
-    # html = " ".join(html.split())
-
-    # async def event_stream():
-    #     yield f"event: datastar-patch-elements\ndata: elements {html}\n\n"
-
-    # return StreamingResponse(
-    #     event_stream(),
-    #     media_type="text/event-stream",
-    #     headers={"Cache-Control": "no-cache"},
-    # )
 
     return templates.TemplateResponse(
         request=request, name="partials/task_list.html", context={"tasks": tasks}

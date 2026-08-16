@@ -12,10 +12,23 @@
   </head>
   <body>
     <h1>Tasks - A Datastar Application</h1>
+    <!-- auth0 logout typically involves a redirect chain to the 
+     identity provider, which fundamentally doesn't work with AJAX. 
+     Use normal browser navigation (anchor, form, or window.location) 
+     for logout actions -->
+    <button
+      class="button logout"
+      data-on:click="window.location.href='/auth/logout'"
+    >
+      Logout
+    </button>
+    <!-- <a href="/auth/logout" class="button logout">Log Out</a> -->
 
     <!-- Signals for form state -->
     <!-- <div data-signals='{"taskName": "", "taskDescription": ""}'></div> -->
 
-    <div id="task-list" data-init="@get('/tasks/fragments/list')"></div>
+    <div id="task-list" data-init="@get('/tasks/fragments/list')">
+      Loading...
+    </div>
   </body>
 </html>
