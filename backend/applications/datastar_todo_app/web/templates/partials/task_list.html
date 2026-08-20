@@ -1,12 +1,16 @@
 <div id="task-list">
   <h2>Tasks</h2>
-  {% for task in tasks %}
-  <div id="task-{{ task.id }}" data-task-id="{{ task.id}}" class="task-item">
-    <h3>{{ task.name }}</h3>
-    <p>{{ task.description }}</p>
-    <button>Delete</button>
-    <button>Complete</button>
-    <button>Edit</button>
+  <div id="tasks-container">
+    {% for task in tasks %}
+    <div id="task-{{ task.id }}" class="task-item">
+      <h3>{{ task.name }}</h3>
+      <p>{{ task.description }}</p>
+      <button data-on:click="@delete('/tasks/fragments/{{ task.id }}')">
+        Delete
+      </button>
+      <button>Complete</button>
+      <button>Edit</button>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 </div>

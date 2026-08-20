@@ -6,11 +6,11 @@ from infrastructure.repositories.base import Repository
 
 
 class TaskRepository(Repository):
-    def get_all_tasks(self) -> list[Tasks]:
+    async def get_all_tasks(self) -> list[Tasks]:
         tasks = self.session.exec(select(Tasks)).all()
         return list(tasks)
 
-    def get_task_by_id(
+    async def get_task_by_id(
         self, task_id: int, raise_not_found: bool = True
     ) -> Tasks | None:
         # Code to retrieve a specific task by its ID from the database
@@ -19,7 +19,7 @@ class TaskRepository(Repository):
             raise Exception(f"Task id {task_id} not found")
         return task
 
-    def create_task(self, new_task: Tasks) -> Tasks:
+    async def create_task(self, new_task: Tasks) -> Tasks:
         result = self.session.scalar(select(Tasks.id).where(Tasks.id == new_task.id))
         if result is not None:
             raise Exception(f"Task id {new_task.id} already exists")
@@ -29,7 +29,7 @@ class TaskRepository(Repository):
         self.session.refresh(new_task)
         return new_task
 
-    def update_task(self, task: Tasks) -> Tasks:
+    async def update_task(self, task: Tasks) -> Tasks:
         result = self.session.scalar(select(Tasks.id).where(Tasks.id == task.id))
         if result is None:
             raise Exception(f"Task id {task.id} not found")
@@ -38,11 +38,11 @@ class TaskRepository(Repository):
         self.session.commit()
         return task
 
-    def delete_task(self, task_id: int):
+    async def delete_task(self, task_id: int):
         # Code to delete a task from the database
         self.session.exec(Delete(Tasks).where(Tasks.id == task_id))  # ty:ignore[invalid-argument-type]:wa
         self.session.commit()
 
-    def get_task_by_user_id(self, user_id: int) -> list[Tasks]:
+    async def get_task_by_user_id(self, user_id: int) -> list[Tasks]:
         tasks = self.session.exec(select(Tasks).filter_by(user_id=user_id)).all()
         return list(tasks)

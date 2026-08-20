@@ -1,10 +1,12 @@
 from auth0_fastapi.auth import AuthClient
 from auth0_fastapi.config import Auth0Config
-from fastapi import HTTPException, Request, Response, status
-from jwt import PyJWKClient, decode
+from fastapi import Depends, HTTPException, Request, Response, status
+from jwt import ExpiredSignatureError, PyJWKClient, decode
 from pydantic import BaseModel, Field, model_validator
 
 from applications.datastar_todo_app.config import datastar_config
+from infrastructure.repositories.base import YieldRepository
+from infrastructure.repositories.users import UserRepository
 
 jwks_client = PyJWKClient(
     f"https://{datastar_config.AUTH0_DOMAIN}/.well-known/jwks.json"
@@ -84,7 +86,7 @@ auth0_config = Auth0Config(
 auth_client = AuthClient(auth0_config)
 
 
-async def require_session_or_redirect(request: Request, response: Response):
+async def require_session_or_redirect(request: Request, response: Response) -> dict:
     try:
         return await auth_client.require_session(request, response)
     except HTTPException as e:
@@ -96,6 +98,26 @@ async def require_session_or_redirect(request: Request, response: Response):
         raise
 
 
-async def get_app_session(request: Request, response: Response):
+async def get_app_session(request: Request, response: Response) -> Auth0Session:
     session = await require_session_or_redirect(request, response)
-    return Auth0Session.model_validate(session)
+    try:
+        return Auth0Session.model_validate(session)
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+            headers={"Location": "/auth/login"},
+        )
+
+
+async def get_user_from_session(
+    request: Request,
+    response: Response,
+    user_repository: UserRepository = Depends(YieldRepository(UserRepository)),
+):
+    session = await get_app_session(request, response)
+
+    if session.token_set is None:
+        raise Exception("auth0 session has no token set for this app")
+
+    user = await user_repository.get_user_by_auth0_id(session.token_set.auth0_id)
+    return user

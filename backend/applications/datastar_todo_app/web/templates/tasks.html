@@ -23,10 +23,50 @@
     >
       Logout
     </button>
-    <!-- <a href="/auth/logout" class="button logout">Log Out</a> -->
+    <div data-signals='{"showAddTaskForm": false}'></div>
+    <button data-on:click="$showAddTaskForm = true">Add Task</button>
 
     <!-- Signals for form state -->
-    <!-- <div data-signals='{"taskName": "", "taskDescription": ""}'></div> -->
+    <div
+      data-signals='{ 
+        "name": "",
+        "description": "",
+        "user_id": "{{ user.id }}"
+      }'
+    >
+      <div data-show="$showAddTaskForm">
+        <form
+          data-on:submit__prevent="@post('/tasks/fragments/create',
+          {
+            filterSignals: {
+              include: /^(name|description|user_id)$/
+            },
+            selector: '#tasks-container',
+            merge: 'append',
+          });
+          $showAddTaskForm = false;
+          $name = '';
+          $description = '';
+        "
+        >
+          <label for="task-name">Task Name</label>
+          <input
+            data-bind="name"
+            name="task-name"
+            type="text"
+            placeholder="Enter task name"
+          />
+          <label for="task-description">Description</label>
+          <textarea
+            data-bind="description"
+            name="task-description"
+            placeholder="Enter description"
+          ></textarea>
+          <button type="submit">Create Task</button>
+          <button data-on:click="$showAddTaskForm = false">Cancel</button>
+        </form>
+      </div>
+    </div>
 
     <div id="task-list" data-init="@get('/tasks/fragments/list')">
       Loading...

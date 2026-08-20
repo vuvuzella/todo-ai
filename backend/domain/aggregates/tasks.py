@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Self
 
+from pydantic import ValidationError, ValidationInfo, field_validator
 from sqlmodel import BigInteger, Field, Relationship
 
 from domain.aggregates.base import SQLModelBase
@@ -12,9 +13,15 @@ if TYPE_CHECKING:
 ## --- Create DTO --- ##
 class CreateTaskDTO(DomainBaseModel):
     name: str
-    description: str | None = None
+    description: str
     completed: bool = False
     user_id: int
+
+    @field_validator("name", "description")
+    def string_cannot_be_empty(cls, v, info: ValidationInfo):
+        if isinstance(v, str) and len(v.strip()) == 0:
+            raise ValidationError(f"field {info.field_name} cannot be an empty string")
+        return v
 
 
 ## --- Read DTO --- ##
